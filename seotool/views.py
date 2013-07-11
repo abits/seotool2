@@ -12,7 +12,8 @@ import json
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    form = LoginForm()
+    return render_template('index.html', form=form)
 
 
 @app.route('/logout')
@@ -21,28 +22,23 @@ def logout():
     return render_template('index.html')
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST'])
 def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('profiles'))
+#     if g.user is not None and g.user.is_authenticated():
+#         return redirect(url_for('profiles'))
     form = LoginForm()
     if form.validate_on_submit():
         user = db.users.User.one({'username': form.username.data})
         if user and user.check_password(form.password.data):
-            session['remember_me'] = form.remember_me.data
-            remember_me = False
-            if 'remember_me' in session:
-                remember_me = session['remember_me']
-                session.pop('remember_me', None)
-            login_user(user, remember=remember_me)
+            login_user(user, remember=True)
             user.last_login.date = datetime.utcnow()
             user.last_login.ip = request.remote_addr
             user.save()
-            return redirect(url_for('profiles'))
+            return redirect(url_for('index'))
         else:
             flash('Login failed! Password and user did not match.', 'error')
-            return redirect('/login')
-    return render_template('login.html', form=form)
+            return redirect('/index')
+    return render_template('index.html', form=form)
 
 
 @app.route('/authorize')
