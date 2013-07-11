@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+*.mo
+*.idea
+venv/
+*~
+doc/_build/
+doc/_static/img/*.png
+client_secrets.json
