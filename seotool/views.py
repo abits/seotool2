@@ -9,11 +9,9 @@ from datetime import datetime
 import json
 
 
-@app.route('/')
 @app.route('/index')
 def index():
-    form = LoginForm()
-    return render_template('index.html', form=form)
+    return render_template('index.html')
 
 
 @app.route('/logout')
@@ -22,7 +20,8 @@ def logout():
     return render_template('index.html')
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/')
+@app.route('/login', methods=['POST', 'GET'])
 def login():
 #     if g.user is not None and g.user.is_authenticated():
 #         return redirect(url_for('profiles'))
@@ -38,7 +37,7 @@ def login():
         else:
             flash('Login failed! Password and user did not match.', 'error')
             return redirect('/index')
-    return render_template('index.html', form=form)
+    return render_template('login.html', form=form)
 
 
 @app.route('/authorize')
@@ -56,5 +55,5 @@ def oauth_step_2():
 
 
 @app.before_request
-def before_request():
+def lookup_current_user():
     g.user = current_user

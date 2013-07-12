@@ -15,6 +15,7 @@ class User(Document):
         'firstname': unicode,
         'lastname': unicode,
         'email': unicode,
+        'openid': unicode,
         'pw_hash': basestring,
         'credentials': dict,
         'last_login': {
@@ -27,7 +28,8 @@ class User(Document):
     }
     validators = {
         'username': tools.max_length(50),
-        'email': tools.max_length(120)
+        'email': tools.max_length(120),
+        'openid': tools.max_length(200)
     }
 
     use_dot_notation = True
@@ -49,7 +51,7 @@ class User(Document):
         return False
 
     def get_id(self):
-        return self.username
+        return self.openid
 
     def __repr__(self):
         return '<User: %r>' % self.username
