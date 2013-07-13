@@ -2,6 +2,7 @@
 # Tools module.
 # This module contains static helper functions.  They should receive all dependencies as parameters.
 # You should not need classes in here. If you feel the need, consider adding a service class.
+from datetime import datetime
 
 
 def max_length(length):
@@ -11,3 +12,12 @@ def max_length(length):
         raise Exception('%s must be at most %s characters long' % length)
 
     return validate
+
+
+def is_expired(credentials):
+    is_expired = False
+    if credentials.get('token_expiry'):
+        expire_date = datetime.strptime(credentials['token_expiry'], '%Y-%m-%dT%H:%M:%SZ')
+        is_expired = expire_date < datetime.utcnow()
+
+    return is_expired

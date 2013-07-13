@@ -18,15 +18,15 @@ def load():
 
 def create_admin_user():
     users = db.users
-    if not users.one({'username': u'admin'}):
+    if not users.one({'username': u'christoph.martel@gmail.com'}):
         connection.register(User)
         admin = users.User()
         admin.email = u'christoph.martel@gmail.com'
         admin.username = admin.email
         admin.openid = admin.email
         admin.credentials = {}
-        admin.firstname = u'Admin'
-        admin.lastname = u'Admin'
+        admin.firstname = u'Christoph'
+        admin.lastname = u'Martel'
         admin.created_at = datetime.utcnow()
         admin.modified_at = datetime.utcnow()
         admin.deleted_at = None

@@ -59,15 +59,18 @@
                                 </ul>
                             </li>
                         </ul>
-                        {% if g.user.is_authenticated %}
-                            <a href="{{ url_for('logout') }}" class="btn pull-right">Logout</a>
-                        {% else %}
-                            <form method="post" action="{{ url_for('login') }}" name="login" class="navbar-form pull-right">
-                                {{ form.hidden_tag() }}
-                                {{ form.username(placeholder='GoogleID', class="span3") }}
-                            <button class="btn" type="submit">Authorize</button>
-                            </form>
-                        {% endif %}
+                        <div class="pull-right">
+                            {% if g.user.is_authenticated() %}
+                                <a href="#" class="brand">{{ g.user.firstname }} {{ g.user.lastname }}</a>
+                                <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+                            {% else %}
+                                <form method="post" action="{{ url_for('login') }}" name="login" class="navbar-form pull-right">
+                                    {{ form.hidden_tag() }}
+                                    {{ form.username(placeholder='GoogleID', class="span3") }}
+                                <button class="btn" type="submit">Authorize</button>
+                                </form>
+                            {% endif %}
+                        </div>
                     </div><!--/.nav-collapse -->
                 </div>
             </div>
