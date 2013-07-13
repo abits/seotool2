@@ -21,8 +21,9 @@ def create_admin_user():
     if not users.one({'username': u'admin'}):
         connection.register(User)
         admin = users.User()
-        admin.username = u'admin'
-        admin.email = u'test_admin@localhost'
+        admin.email = u'christoph.martel@gmail.com'
+        admin.username = admin.email
+        admin.openid = admin.email
         admin.credentials = {}
         admin.firstname = u'Admin'
         admin.lastname = u'Admin'
@@ -30,7 +31,7 @@ def create_admin_user():
         admin.modified_at = datetime.utcnow()
         admin.deleted_at = None
         admin.set_password('password')
-        admin.build()
+        admin.save()
 
 if __name__ == '__main__':
     load()
