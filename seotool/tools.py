@@ -15,7 +15,7 @@ def max_length(length):
 
 
 def is_expired(credentials):
-    is_expired = False
+    is_expired = True
     if credentials.get('token_expiry'):
         expire_date = datetime.strptime(credentials['token_expiry'], '%Y-%m-%dT%H:%M:%SZ')
         is_expired = expire_date < datetime.utcnow()

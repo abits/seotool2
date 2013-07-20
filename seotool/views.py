@@ -14,7 +14,6 @@ import json
 @app.route('/')
 @app.route('/index')
 def index():
-    flash(g.user)
     return render_template('index.html', user=g.user)
 
 
@@ -45,6 +44,9 @@ def oauth_step_2():
             stored_user.save()
             login_user(stored_user)
             g.user = stored_user
+        else:
+            msg = 'Sorry, we don\'t know %s. Log out from Google and try again.' % user_email
+            flash(msg)
     except AccessTokenRefreshError:
         print AccessTokenRefreshError
     return redirect(url_for('index'))
