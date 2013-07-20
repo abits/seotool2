@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'oauth_step2'
 #login_manager.login_message = 'Please log in to access this page.'
 
 app.config.from_pyfile('../config.py')

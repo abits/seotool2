@@ -6,57 +6,52 @@ from flask.ext.login import login_user, logout_user, current_user
 from seotool import app, db, tools
 from forms import LoginForm
 from datetime import datetime
+from httplib2 import Http
+from apiclient.discovery import build
+from oauth2client.client import AccessTokenRefreshError, OAuth2Credentials
 import json
 
-
+@app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', form=LoginForm())
+    flash(g.user)
+    return render_template('index.html', user=g.user)
 
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return render_template('index.html', form=LoginForm())
-
-
-@app.route('/')
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = db.users.User.one({'username': form.username.data})
-        if user:
-            user.last_login.date = datetime.utcnow()
-            user.last_login.ip = request.remote_addr
-            user.save()
-            if login_user(user):
-                if tools.is_expired(user.credentials):
-                    return redirect(url_for('oauth_step1'))
-                else:
-                    return redirect(url_for('index'))
-        else:
-            flash('Fail! We don\'t know your Google Account.', 'error')
-        return redirect('/login')
-    return render_template('login.html', form=form)
-
+    return render_template('index.html', user=g.user)
 
 @app.route('/authorize')
 def oauth_step1():
     authorize_url = app.config['FLOW'].step1_get_authorize_url()
     return redirect(authorize_url)
 
-
 @app.route('/authorized')
 def oauth_step_2():
     credentials = app.config['FLOW'].step2_exchange(request.args['code'])
-    g.user.credentials = json.loads(credentials.to_json())
-    g.user.save()
+    http = Http()
+    try:
+        http = credentials.authorize(http)
+        users_service = build('oauth2', 'v2', http=http)
+        user_document = users_service.userinfo().get().execute()
+        user_email = user_document['email']
+        stored_user = db.users.User.one({'email': user_email})
+        if stored_user:
+            stored_user.last_login.date = datetime.utcnow()
+            stored_user.last_login.ip = request.remote_addr
+            stored_user.credentials = json.loads(credentials.to_json())
+            stored_user.save()
+            login_user(stored_user)
+            g.user = stored_user
+    except AccessTokenRefreshError:
+        print AccessTokenRefreshError
     return redirect(url_for('index'))
 
 
 @app.before_request
 def before_request():
     g.user = current_user
+    if g.user.is_authenticated() and tools.is_expired(g.user.credentials):
+        redirect(url_for('logout'))

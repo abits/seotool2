@@ -21,6 +21,7 @@ MISSING_CLIENT_SECRETS_MESSAGE = '%s is missing' % CLIENT_SECRETS
 # The Flow object to be used if we need to authenticate.
 FLOW = flow_from_clientsecrets(CLIENT_SECRETS,
                                scope=['https://www.googleapis.com/auth/analytics.readonly',
-                                      'https://www.googleapis.com/auth/analytics'],
+                                      'https://www.googleapis.com/auth/analytics',
+                                      'https://www.googleapis.com/auth/userinfo.email'],
                                redirect_uri='http://seotool.codeways.org/authorized',
                                message=MISSING_CLIENT_SECRETS_MESSAGE)
