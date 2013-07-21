@@ -16,8 +16,18 @@
 
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div>
-                <h1>Your Google Analytics Accounts</h1>
-                {{ accounts }}
+                <h4>Your Google Analytics Accounts</h4>
+                <table class="table table-striped">
+                    {% for item in accounts['items'] %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item['name'] }}</td>
+                            <td>{{ item['created'] }}</td>
+                            <td>{{ item['updated'] }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </div>
 
             <hr>
