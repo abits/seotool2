@@ -2,8 +2,8 @@
 # Views modules.  Controller which handle the request-response-flow.  They typically call services to provide
 # data and perform actions.  They should not communicate directly with models and providers.
 from flask import render_template, flash, redirect, url_for, request, g
-from flask.ext.login import login_user, logout_user, current_user, login_required
-from seotool import app, db, tools
+from flask.ext.login import login_user, logout_user, current_user, login_required, AnonymousUser
+from seotool import app, db, tools, model
 from forms import LoginForm
 from datetime import datetime
 from httplib2 import Http
@@ -19,7 +19,7 @@ def index():
 
 @app.route('/accounts')
 @login_required
-def profiles_list():
+def accounts_list():
     credentials = OAuth2Credentials.from_json(json.dumps(g.user.credentials))
     http = Http()
     http = credentials.authorize(http)
@@ -28,15 +28,22 @@ def profiles_list():
     return render_template('accounts.html', accounts=accounts, user=g.user)
 
 
+@app.route('/login')
+def login():
+    pass
+
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
 @app.route('/authorize')
-def oauth_step1():
+def oauth_step_1():
     authorize_url = app.config['FLOW'].step1_get_authorize_url()
     return redirect(authorize_url)
+
 
 @app.route('/authorized')
 def oauth_step_2():
@@ -60,7 +67,7 @@ def oauth_step_2():
             flash(msg)
     except AccessTokenRefreshError:
         print AccessTokenRefreshError
-    return redirect(url_for('index'))
+    return redirect(url_for('accounts_list'))
 
 
 @app.before_request

@@ -8,8 +8,8 @@ import os
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'oauth_step2'
-#login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_view = 'oauth_step_1'
+login_manager.login_message = None
 
 app.config.from_pyfile('../config.py')
 connection = Connection(app.config['MONGODB_HOST'],
