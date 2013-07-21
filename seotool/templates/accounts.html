@@ -1,0 +1,32 @@
+{% extends "layout.html"  %}
+{% set active_page = "accounts" %}
+
+        {% block container %}
+        <div class="container">
+            <!-- Global flash messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert fade in">
+                            {{ message }}
+                            <a class="close" data-dismiss="alert" href="#">&times;</a>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Main hero unit for a primary marketing message or call to action -->
+            <div>
+                <h1>Your Google Analytics Accounts</h1>
+                {{ accounts }}
+            </div>
+
+            <hr>
+
+            <footer>
+                <p>&copy; Company 2012</p>
+            </footer>
+
+        </div> <!-- /container -->
+        {% endblock %}
+

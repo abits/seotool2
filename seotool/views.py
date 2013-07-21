@@ -2,7 +2,7 @@
 # Views modules.  Controller which handle the request-response-flow.  They typically call services to provide
 # data and perform actions.  They should not communicate directly with models and providers.
 from flask import render_template, flash, redirect, url_for, request, g
-from flask.ext.login import login_user, logout_user, current_user
+from flask.ext.login import login_user, logout_user, current_user, login_required
 from seotool import app, db, tools
 from forms import LoginForm
 from datetime import datetime
@@ -17,10 +17,21 @@ def index():
     return render_template('index.html', user=g.user)
 
 
+@app.route('/accounts')
+@login_required
+def profiles_list():
+    credentials = OAuth2Credentials.from_json(json.dumps(g.user.credentials))
+    http = Http()
+    http = credentials.authorize(http)
+    service = build('analytics', 'v3', http=http)
+    accounts = service.management().accounts().list().execute()
+    return render_template('accounts.html', accounts=accounts, user=g.user)
+
+
 @app.route('/logout')
 def logout():
     logout_user()
-    return render_template('index.html', user=g.user)
+    return redirect(url_for('index'))
 
 @app.route('/authorize')
 def oauth_step1():
