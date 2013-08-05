@@ -13,3 +13,9 @@ class LoginForm(Form):
     #                          validators=[Required(), Length(max=32)])
     # remember_me = BooleanField('Remember me', description="Remember me",
     #                            default=False)
+
+
+class EditReportForm(Form):
+    include_monthly_visitors_section = BooleanField(u'Besucher im Vergleich zum Vormonat')
+    month_monthly_visitors_section = TextField()
+    year_monthly_visitors_section = TextField()

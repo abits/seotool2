@@ -4,12 +4,13 @@
 from flask import render_template, flash, redirect, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required, AnonymousUser
 from seotool import app, db, tools, model
-from forms import LoginForm
+from forms import LoginForm, EditReportForm
 from datetime import datetime
 from httplib2 import Http
 from apiclient.discovery import build
 from oauth2client.client import AccessTokenRefreshError, OAuth2Credentials
 import json
+
 
 @app.route('/')
 @app.route('/index')
@@ -25,7 +26,27 @@ def accounts_list():
     http = credentials.authorize(http)
     service = build('analytics', 'v3', http=http)
     accounts = service.management().accounts().list().execute()
-    return render_template('accounts.html', accounts=accounts, user=g.user)
+    items = accounts.get('items')
+    firstAccountId = items[0].get('id')
+    print firstAccountId
+    webproperties = service.management().webproperties().list(accountId=firstAccountId).execute()
+    print "webproperties: "
+    print webproperties
+    return render_template('accounts.html', accounts=webproperties, user=g.user)
+
+
+@app.route('/report/<account_id>')
+@login_required
+def reports_edit(account_id):
+    credentials = OAuth2Credentials.from_json(json.dumps(g.user.credentials))
+    http = Http()
+    http = credentials.authorize(http)
+    service = build('analytics', 'v3', http=http)
+    webproperties = service.management().webproperties().list(
+        accountId=account_id).execute()
+    flash(webproperties)
+    form = EditReportForm()
+    return render_template('report_edit.html', webproperties=webproperties, user=g.user, form=form)
 
 
 @app.route('/login')
@@ -62,16 +83,18 @@ def oauth_step_2():
             stored_user.save()
             login_user(stored_user)
             g.user = stored_user
+            return redirect(url_for('accounts_list'))
         else:
             msg = 'Sorry, we don\'t know %s. Log out from Google and try again.' % user_email
             flash(msg)
     except AccessTokenRefreshError:
         print AccessTokenRefreshError
-    return redirect(url_for('accounts_list'))
+    return redirect(url_for('logout'))
+
 
 
 @app.before_request
 def before_request():
     g.user = current_user
     if g.user.is_authenticated() and tools.is_expired(g.user.credentials):
-        redirect(url_for('logout'))
+        return redirect(url_for('logout'))

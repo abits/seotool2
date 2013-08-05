@@ -16,28 +16,13 @@
 
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div>
-                <h4>Your Google Analytics Accounts</h4>
-                <table class="table table-striped">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Angelegt am</th>
-                        <th>Bearbeitet am</th>
-                        <th>Aktion</th>
-                    </tr>
-                    {% for item in accounts['items'] %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ item['name'] }}</td>
-                        <td>{{ item['created']|time_fmt }}</td>
-                        <td>{{ item['updated']|time_fmt }}</td>
-                        <td><a href="/report/{{ item['accountId'] }}" class="btn btn-mini">Bericht erstellen</a></td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                <h4>Create Report</h4>
             </div>
 
             <hr>
+            {{ form.include_monthly_visitors_section }}
+            {{ form.month_monthly_visitors_section }}
+            {{ form.year_monthly_visitors_section }}
 
             <footer>
                 <p>&copy; Company 2012</p>
