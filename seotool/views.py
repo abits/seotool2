@@ -70,6 +70,7 @@ def oauth_step_1():
 def oauth_step_2():
     credentials = app.config['FLOW'].step2_exchange(request.args['code'])
     http = Http()
+    redirect_url = url_for('logout')
     try:
         http = credentials.authorize(http)
         users_service = build('oauth2', 'v2', http=http)
@@ -83,13 +84,13 @@ def oauth_step_2():
             stored_user.save()
             login_user(stored_user)
             g.user = stored_user
-            return redirect(url_for('accounts_list'))
+            redirect_url = url_for('accounts_list')
         else:
             msg = 'Sorry, we don\'t know %s. Log out from Google and try again.' % user_email
             flash(msg)
     except AccessTokenRefreshError:
         print AccessTokenRefreshError
-    return redirect(url_for('logout'))
+    return redirect(redirect_url)
 
 
 
